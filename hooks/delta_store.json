@@ -1,0 +1,366 @@
+{
+  "version": 2,
+  "note": "Delta store: known stale CLI forms mapped to their current form. Each entry matches a command with `match.any_regex` and rewrites it with `suggest`. The PreToolUse hook surfaces a hint on a match; the PostToolUse harvester appends newly observed (stale -> working) pairs to drift_examples.jsonl for review and promotion into this file. Add your own entries in the same shape.",
+  "deltas": [
+    {
+      "id": "docker-compose-v1-to-v2",
+      "tool": "docker",
+      "from_version": "compose-v1",
+      "to_version": "compose-v2",
+      "match": {
+        "any_regex": [
+          "\\bdocker-compose\\b"
+        ]
+      },
+      "suggest": {
+        "regex": "\\bdocker-compose\\b",
+        "replacement": "docker compose"
+      },
+      "note": "docker-compose (v1, hyphen) -> `docker compose` (v2, subcommand). v1 is EOL."
+    },
+    {
+      "id": "docker-build-compress-removed",
+      "tool": "docker",
+      "from_version": "<20.10",
+      "to_version": ">=20.10",
+      "match": {
+        "any_regex": [
+          "docker build[^\\n]*--compress"
+        ]
+      },
+      "suggest": {
+        "regex": "\\s--compress\\b",
+        "replacement": ""
+      },
+      "note": "`docker build --compress` was removed; flag no longer exists."
+    },
+    {
+      "id": "aws-configure-sso-legacy",
+      "tool": "aws",
+      "from_version": "v1",
+      "to_version": "v2",
+      "match": {
+        "any_regex": [
+          "aws configure sso[^\\n]*--profile"
+        ]
+      },
+      "suggest": null,
+      "note": "aws CLI v2 changed SSO configuration flow vs v1; verify `aws configure sso` interactive flow."
+    },
+    {
+      "id": "kubectl-run-generator-removed",
+      "tool": "kubectl",
+      "from_version": "<1.18",
+      "to_version": ">=1.18",
+      "match": {
+        "any_regex": [
+          "kubectl run[^\\n]*--generator"
+        ]
+      },
+      "suggest": {
+        "regex": "\\s--generator=[^\\s]+",
+        "replacement": ""
+      },
+      "note": "`kubectl run --generator` was removed in 1.18; only creates a pod now."
+    },
+    {
+      "id": "kubectl-dry-run-boolean",
+      "tool": "kubectl",
+      "from_version": "<1.18",
+      "to_version": ">=1.18",
+      "match": {
+        "any_regex": [
+          "--dry-run(?!=)(?:\\s|$)"
+        ]
+      },
+      "suggest": {
+        "regex": "--dry-run(?!=)",
+        "replacement": "--dry-run=client"
+      },
+      "note": "`--dry-run` (boolean) deprecated for `--dry-run=client|server|none` in 1.18+."
+    },
+    {
+      "id": "git-checkout-to-switch-restore",
+      "tool": "git",
+      "from_version": "<2.23",
+      "to_version": ">=2.23",
+      "match": {
+        "any_regex": [
+          "git checkout -b\\b"
+        ]
+      },
+      "suggest": null,
+      "note": "git 2.23+ splits `git checkout` into `git switch` / `git restore`; checkout still works but switch/restore preferred."
+    },
+    {
+      "id": "docker-init-added",
+      "tool": "docker",
+      "match": {
+        "any_regex": []
+      },
+      "note": "`docker init` exists (Docker 4.18+): scaffolds Dockerfile/.dockerignore/compose. It is a real command."
+    },
+    {
+      "id": "docker-buildkit-default",
+      "tool": "docker",
+      "match": {
+        "any_regex": [
+          "DOCKER_BUILDKIT=1"
+        ]
+      },
+      "note": "BuildKit is the default builder since Docker 23.0; `DOCKER_BUILDKIT=1` is no longer needed \u2014 just `docker build`."
+    },
+    {
+      "id": "kubectl-events-added",
+      "tool": "kubectl",
+      "match": {
+        "any_regex": [
+          "kubectl\\s+get\\s+events"
+        ]
+      },
+      "note": "`kubectl events` is a dedicated command (1.23+); prefer it over `kubectl get events`."
+    },
+    {
+      "id": "kubectl-debug-ga",
+      "tool": "kubectl",
+      "match": {
+        "any_regex": [
+          "kubectl\\s+alpha\\s+debug",
+          "kubectl\\s+exec\\b"
+        ]
+      },
+      "note": "`kubectl debug` (ephemeral containers) is GA since k8s 1.25 \u2014 no `alpha`, no manual debug pod / exec."
+    },
+    {
+      "id": "kubectl-create-token",
+      "tool": "kubectl",
+      "match": {
+        "any_regex": [
+          "kind:\\s*Secret",
+          "service-account-token"
+        ]
+      },
+      "note": "`kubectl create token <sa>` mints a short-lived SA token; no manual Secret of type service-account-token."
+    },
+    {
+      "id": "kubectl-kuberc",
+      "tool": "kubectl",
+      "match": {
+        "any_regex": []
+      },
+      "note": "`kuberc` is a new user preferences file (alpha, kubectl 1.33) \u2014 a config surface separate from kubeconfig."
+    },
+    {
+      "id": "aws-no-cli-pager",
+      "tool": "aws",
+      "match": {
+        "any_regex": []
+      },
+      "note": "AWS CLI v2 pipes output through a pager by default; for non-interactive use pass `--no-cli-pager` (or set AWS_PAGER=)."
+    },
+    {
+      "id": "aws-sso-configure",
+      "tool": "aws",
+      "match": {
+        "any_regex": [
+          "aws\\s+sso\\s+configure",
+          "^aws\\s+configure\\s*$"
+        ]
+      },
+      "note": "For IAM Identity Center use `aws configure sso` (not `aws sso configure`, not bare `aws configure`)."
+    },
+    {
+      "id": "aws-bedrock-runtime",
+      "tool": "aws",
+      "match": {
+        "any_regex": []
+      },
+      "note": "`aws bedrock-runtime invoke-model` is a real command (Bedrock service); the CLI supports it."
+    },
+    {
+      "id": "git-switch-branch",
+      "tool": "git",
+      "match": {
+        "any_regex": [
+          "git\\s+checkout\\s+(?!-b\\b)(?!--orphan\\b)[A-Za-z0-9._/-]+"
+        ]
+      },
+      "note": "git 2.23+ prefers `git switch <branch>` over `git checkout <branch>` for switching branches."
+    },
+    {
+      "id": "git-init-initial-branch",
+      "tool": "git",
+      "match": {
+        "any_regex": [
+          "git\\s+init\\s*(\\.)?\\s*$",
+          "git\\s+branch\\s+-[mM]\\s+",
+          "git\\s+checkout\\s+-b\\s+"
+        ]
+      },
+      "note": "git 2.28+ has `git init -b <name>` / `--initial-branch`; no need to init then rename the branch."
+    },
+    {
+      "id": "git-switch-orphan",
+      "tool": "git",
+      "match": {
+        "any_regex": [
+          "git\\s+checkout\\s+--orphan"
+        ]
+      },
+      "note": "git 2.23+ supports `git switch --orphan <name>` to create an orphan branch."
+    },
+    {
+      "id": "node-watch-stable",
+      "tool": "node",
+      "match": {
+        "any_regex": [
+          "--experimental-watch",
+          "\\bnodemon\\b"
+        ]
+      },
+      "note": "`node --watch` is stable (Node 20.13+); no `--experimental-watch` flag and no nodemon needed."
+    },
+    {
+      "id": "npm-pkg-set",
+      "tool": "npm",
+      "match": {
+        "any_regex": [
+          "\\bjson\\s+-I\\b",
+          "edit[^\\n]*package\\.json"
+        ]
+      },
+      "note": "`npm pkg set <field>=<value>` edits package.json in place; no external `json` tool or manual edit."
+    },
+    {
+      "id": "corepack-enable",
+      "tool": "node",
+      "match": {
+        "any_regex": [
+          "npm\\s+(install|i)\\s+-g\\s+yarn",
+          "npm\\s+(install|i)\\s+-g\\s+pnpm"
+        ]
+      },
+      "note": "Corepack manages yarn/pnpm; run `corepack enable` instead of `npm install -g yarn`."
+    },
+    {
+      "id": "corepack-unbundled",
+      "tool": "node",
+      "match": {
+        "any_regex": []
+      },
+      "note": "Corepack is being UNBUNDLED from Node 25+ (TSC vote Mar 2025); it may need `npm install -g corepack` before `corepack enable`."
+    },
+    {
+      "id": "terraform-test",
+      "tool": "terraform",
+      "match": {
+        "any_regex": [
+          "\\bterratest\\b",
+          "\\bgo\\s+test\\b"
+        ]
+      },
+      "note": "Terraform has a native `terraform test` framework (1.6+); no Terratest / `go test` needed."
+    },
+    {
+      "id": "terraform-import-generate",
+      "tool": "terraform",
+      "match": {
+        "any_regex": [
+          "terraform\\s+import\\s"
+        ]
+      },
+      "note": "Use an `import {}` block + `terraform plan -generate-config-out=FILE` (1.5+) to generate config, not the legacy `terraform import` CLI."
+    },
+    {
+      "id": "terraform-removed-block",
+      "tool": "terraform",
+      "match": {
+        "any_regex": [
+          "terraform\\s+state\\s+rm"
+        ]
+      },
+      "note": "Use a `removed {}` block (1.7+) to drop resources from state without destroying, instead of `terraform state rm`."
+    },
+    {
+      "id": "uv-exists",
+      "tool": "python",
+      "match": {
+        "any_regex": []
+      },
+      "note": "`uv` (from Astral) is a real, fast Python package/venv manager: `uv venv`, `uv pip install`, `uv run`."
+    },
+    {
+      "id": "uv-run",
+      "tool": "python",
+      "match": {
+        "any_regex": [
+          "python\\s+app\\.py",
+          "pip\\s+install"
+        ]
+      },
+      "note": "`uv run app.py` executes a script with its declared deps managed automatically."
+    },
+    {
+      "id": "pyproject-toml-standard",
+      "tool": "python",
+      "match": {
+        "any_regex": [
+          "setup\\.py",
+          "setup\\.cfg"
+        ]
+      },
+      "note": "pyproject.toml is the packaging standard (PEP 517/518/621); prefer it over setup.py / setup.cfg."
+    },
+    {
+      "id": "uv-self-version",
+      "tool": "python",
+      "match": {
+        "any_regex": [
+          "uv\\s+version\\s*$"
+        ]
+      },
+      "note": "`uv version` outside a project now FAILS (uv 0.8, #14161); use `uv self version` for the uv version."
+    },
+    {
+      "id": "uv-system-certs",
+      "tool": "python",
+      "match": {
+        "any_regex": [
+          "--native-tls"
+        ]
+      },
+      "note": "uv `--native-tls` is deprecated in favor of `--system-certs` (uv 0.8)."
+    },
+    {
+      "id": "cargo-add-builtin",
+      "tool": "rust",
+      "match": {
+        "any_regex": [
+          "cargo-edit",
+          "cargo\\s+install\\s+cargo-edit"
+        ]
+      },
+      "note": "`cargo add` is built into cargo (1.62+); no cargo-edit plugin needed. Use `cargo add serde --features derive`."
+    },
+    {
+      "id": "cargo-remove-builtin",
+      "tool": "rust",
+      "match": {
+        "any_regex": [
+          "edit[^\\n]*Cargo\\.toml"
+        ]
+      },
+      "note": "`cargo remove <crate>` is built in (1.62+); no manual Cargo.toml edit."
+    },
+    {
+      "id": "terragrunt-run-all",
+      "tool": "terragrunt",
+      "match": {
+        "any_regex": [
+          "terragrunt\\s+run-all"
+        ]
+      },
+      "note": "Terragrunt CLI redesign: `run-all` is deprecated -> `terragrunt run --all <cmd>`; the `terragrunt-` flag prefix is dropped."
+    }
+  ]
+}

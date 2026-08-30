@@ -1,0 +1,10 @@
+.DS_Store
+.omni/
+.claude/
+.cursor/
+.kiro/
+.agents/
+*.env*
+*/__pycache__/*
+*.pyc
+*.pyo

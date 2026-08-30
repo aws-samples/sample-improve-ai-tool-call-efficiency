@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python3 /ABS/PATH/sample-improve-ai-tool-call-efficiency/hooks/pre_tool_use.py" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "python3 /ABS/PATH/sample-improve-ai-tool-call-efficiency/hooks/post_tool_use.py" }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "TCE_INJECT": "1"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "note": "Minimal starter delta store \u2014 a handful of hand-authored entries to build on. Same shape as delta_store.json; point TCE_DELTA_STORE at a copy of this to grow your own set from scratch.",
+  "deltas": [
+    {
+      "id": "docker-compose-v1-to-v2",
+      "tool": "docker",
+      "from_version": "compose-v1",
+      "to_version": "compose-v2",
+      "match": {
+        "any_regex": [
+          "\\bdocker-compose\\b"
+        ]
+      },
+      "suggest": {
+        "regex": "\\bdocker-compose\\b",
+        "replacement": "docker compose"
+      },
+      "note": "docker-compose (v1, hyphen) -> `docker compose` (v2, subcommand). v1 is EOL."
+    },
+    {
+      "id": "docker-build-compress-removed",
+      "tool": "docker",
+      "from_version": "<20.10",
+      "to_version": ">=20.10",
+      "match": {
+        "any_regex": [
+          "docker build[^\\n]*--compress"
+        ]
+      },
+      "suggest": {
+        "regex": "\\s--compress\\b",
+        "replacement": ""
+      },
+      "note": "`docker build --compress` was removed; flag no longer exists."
+    },
+    {
+      "id": "aws-configure-sso-legacy",
+      "tool": "aws",
+      "from_version": "v1",
+      "to_version": "v2",
+      "match": {
+        "any_regex": [
+          "aws configure sso[^\\n]*--profile"
+        ]
+      },
+      "suggest": null,
+      "note": "aws CLI v2 changed SSO configuration flow vs v1; verify `aws configure sso` interactive flow."
+    },
+    {
+      "id": "kubectl-run-generator-removed",
+      "tool": "kubectl",
+      "from_version": "<1.18",
+      "to_version": ">=1.18",
+      "match": {
+        "any_regex": [
+          "kubectl run[^\\n]*--generator"
+        ]
+      },
+      "suggest": {
+        "regex": "\\s--generator=[^\\s]+",
+        "replacement": ""
+      },
+      "note": "`kubectl run --generator` was removed in 1.18; only creates a pod now."
+    },
+    {
+      "id": "kubectl-dry-run-boolean",
+      "tool": "kubectl",
+      "from_version": "<1.18",
+      "to_version": ">=1.18",
+      "match": {
+        "any_regex": [
+          "--dry-run(?!=)(?:\\s|$)"
+        ]
+      },
+      "suggest": {
+        "regex": "--dry-run(?!=)",
+        "replacement": "--dry-run=client"
+      },
+      "note": "`--dry-run` (boolean) deprecated for `--dry-run=client|server|none` in 1.18+."
+    },
+    {
+      "id": "git-checkout-to-switch-restore",
+      "tool": "git",
+      "from_version": "<2.23",
+      "to_version": ">=2.23",
+      "match": {
+        "any_regex": [
+          "git checkout -b\\b"
+        ]
+      },
+      "suggest": null,
+      "note": "git 2.23+ splits `git checkout` into `git switch` / `git restore`; checkout still works but switch/restore preferred."
+    }
+  ]
+}
